@@ -1,0 +1,24 @@
+# Free HTTPS deploy for the existing Sana server.
+# Render prompts for GEMINI_API_KEY. Do not put that secret in this file,
+# in git, or in the Android app.
+services:
+  - type: web
+    name: sana-ai
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AI_PROVIDER
+        value: gemini
+      - key: AI_BASE_URL
+        value: https://generativelanguage.googleapis.com/v1beta
+      - key: AI_MODEL
+        value: gemini-3.8-flash
+      - key: AI_VISION
+        value: auto
+      - key: TRUST_PROXY
+        value: "1"

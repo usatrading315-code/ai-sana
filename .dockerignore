@@ -1,0 +1,10 @@
+node_modules
+.env
+.git
+android
+backend/data
+backend/test
+*.apk
+*.log
+*.keystore
+*.jks

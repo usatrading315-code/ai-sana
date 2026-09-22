@@ -1,0 +1,23 @@
+{
+  "name": "sana-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sana AI — Android assistant and study companion with a secure backend.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node backend/src/index.js",
+    "test": "node --test --test-concurrency=1 backend/test/*.test.js",
+    "sync-android": "node scripts/sync-android-assets.mjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "mammoth": "^1.9.0",
+    "unpdf": "^0.12.2"
+  }
+}
