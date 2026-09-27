@@ -204,6 +204,88 @@ export function createApp() {
     res.json({ ok: true });
   });
 
+  // Task Endpoints
+  app.get('/api/v1/tasks', (req, res) => {
+    const deviceId = requireDevice(req.query.deviceId);
+    const filter = req.query.filter || 'all';
+    res.json({ tasks: getServices().tasks.list(deviceId, filter) });
+  });
+
+  app.post('/api/v1/tasks', (req, res, next) => {
+    try {
+      const deviceId = requireDevice(req.body?.deviceId);
+      const title = String(req.body?.title || '').trim();
+      const priority = req.body?.priority || 'normal';
+      const dueDate = req.body?.dueDate || null;
+      const item = getServices().tasks.add(deviceId, { title, priority, dueDate });
+      res.status(201).json(item);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.put('/api/v1/tasks/:id', (req, res, next) => {
+    try {
+      const deviceId = requireDevice(req.body?.deviceId);
+      const item = getServices().tasks.update(deviceId, req.params.id, req.body || {});
+      res.json(item);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/v1/tasks/:id/toggle', (req, res, next) => {
+    try {
+      const deviceId = requireDevice(req.body?.deviceId);
+      const item = getServices().tasks.toggle(deviceId, req.params.id);
+      res.json(item);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete('/api/v1/tasks/:id', (req, res) => {
+    const deviceId = requireDevice(req.query.deviceId);
+    getServices().tasks.remove(deviceId, req.params.id);
+    res.json({ ok: true });
+  });
+
+  // Reminder Endpoints
+  app.get('/api/v1/reminders', (req, res) => {
+    const deviceId = requireDevice(req.query.deviceId);
+    const filter = req.query.filter || 'active';
+    res.json({ reminders: getServices().reminders.list(deviceId, filter) });
+  });
+
+  app.post('/api/v1/reminders', (req, res, next) => {
+    try {
+      const deviceId = requireDevice(req.body?.deviceId);
+      const text = String(req.body?.text || '').trim();
+      const triggerTime = req.body?.triggerTime || null;
+      const recurring = req.body?.recurring || null;
+      const item = getServices().reminders.add(deviceId, { text, triggerTime, recurring });
+      res.status(201).json(item);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/v1/reminders/:id/dismiss', (req, res, next) => {
+    try {
+      const deviceId = requireDevice(req.body?.deviceId);
+      const item = getServices().reminders.dismiss(deviceId, req.params.id);
+      res.json(item);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.delete('/api/v1/reminders/:id', (req, res) => {
+    const deviceId = requireDevice(req.query.deviceId);
+    getServices().reminders.remove(deviceId, req.params.id);
+    res.json({ ok: true });
+  });
+
   const webRoot = path.join(ROOT, 'web');
   app.use(
     express.static(webRoot, {

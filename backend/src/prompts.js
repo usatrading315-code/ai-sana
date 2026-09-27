@@ -56,6 +56,7 @@ export function buildSystemPrompt({
   memories,
   webStatus,
   sensitiveAttempt,
+  skillContext,
 }) {
   const lines = [
     `You are ${name}, a friendly, intelligent female AI assistant and study companion.`,
@@ -71,6 +72,9 @@ export function buildSystemPrompt({
     'Never invent web search results, URLs, citations, prices, scores, or other current facts you were not given. If you are unsure, say so.',
   ];
 
+  if (skillContext) {
+    lines.push(`Skill context:\n${skillContext}`);
+  }
   if (memories?.length) {
     lines.push(
       'The user explicitly asked you to remember this. Use it when it is relevant. Do not recite the list unprompted:\n' +

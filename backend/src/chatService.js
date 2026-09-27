@@ -1,10 +1,13 @@
 import { getConfig, visionSupport } from './config.js';
 import { createConversationStore } from './conversationStore.js';
 import { createMemoryStore } from './memoryStore.js';
+import { createTaskStore } from './taskStore.js';
+import { createReminderStore } from './reminderStore.js';
 import { prepareAttachments, composeUserContent } from './documents.js';
 import { searchWeb } from './search.js';
 import { streamCompletion } from './providers.js';
 import { buildSystemPrompt, webBlock } from './prompts.js';
+import { defaultRouter } from './skills/index.js';
 import {
   AppError,
   detectLanguage,
@@ -19,6 +22,8 @@ import { createRateLimiter } from './rateLimit.js';
 const limit = createRateLimiter({ windowMs: 60_000, max: 30 });
 let conversations;
 let memories;
+let tasks;
+let reminders;
 let boundDir = '';
 
 function stores() {
@@ -27,8 +32,10 @@ function stores() {
     boundDir = cfg.dataDir;
     conversations = createConversationStore(cfg.dataDir);
     memories = createMemoryStore(cfg.dataDir);
+    tasks = createTaskStore(cfg.dataDir);
+    reminders = createReminderStore(cfg.dataDir);
   }
-  return { conversations, memories, cfg };
+  return { conversations, memories, tasks, reminders, cfg };
 }
 
 export function getServices() {
@@ -117,6 +124,33 @@ export async function runChat(rawBody, ctx) {
     }
   }
 
+  // AI Skill Router execution
+  let skillResult = null;
+  try {
+    const route = await defaultRouter.route({
+      message: input.message,
+      attachments: input.attachments,
+      mode: input.mode,
+      studyTask: input.studyTask,
+      workTask: input.workTask,
+    });
+    if (route?.skillId) {
+      const skill = defaultRouter.get(route.skillId);
+      if (skill) {
+        skillResult = await skill.execute({
+          message: input.message,
+          route,
+          cfg,
+          deviceId: input.deviceId,
+          taskStore: stores().tasks,
+          reminderStore: stores().reminders,
+        });
+      }
+    }
+  } catch {
+    /* fallback safely if skill resolution fails */
+  }
+
   const system = buildSystemPrompt({
     name: input.assistantName,
     language: input.language,
@@ -127,6 +161,7 @@ export async function runChat(rawBody, ctx) {
     memories: memoryStore.list(input.deviceId),
     webStatus,
     sensitiveAttempt,
+    skillContext: skillResult?.promptContext,
   });
   const history = convStore.modelMessages(input.conversationId, input.deviceId);
   if (input.regenerate && !images.length && history.length) {

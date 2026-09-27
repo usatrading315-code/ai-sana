@@ -59,6 +59,7 @@ export async function streamCompletion({ cfg, messages, images, signal, onToken 
         415
       );
     }
+    logUpstreamException(error);
     throw new AppError('UPSTREAM', upstreamMessage(0, message), 502);
   } finally {
     timed.clear();

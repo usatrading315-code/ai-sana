@@ -1,0 +1,12 @@
+## Copy to local.properties. Do not commit the real file.
+## sdk.dir is created by Android Studio.
+# sdk.dir=/path/to/Android/sdk
+
+## Optional. Address of your Sana server. This is NOT the Gemini API key.
+## Do not put GEMINI_API_KEY here.
+## Debug emulator:  backend.url=http://10.0.2.2:8080
+## Debug phone:     backend.url=http://192.168.x.x:8080
+## Release APK:     backend.url=https://sana-ai-p02e.onrender.com
+## A release build ignores http:// and localhost. Set this only after the
+## server is deployed. Never put GEMINI_API_KEY in this file.
+# backend.url=https://sana-ai-p02e.onrender.com

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#071018">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Sana is your AI assistant and study companion.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Sana AI</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+  <script src="js/preboot.js"></script>
+</head>
+<body>
+  <a class="skip" href="#chat-log">Skip to conversation</a>
+  <div class="app" id="app">
+    <header class="topbar" id="chat-header">
+      <div class="who">
+        <img class="avatar" src="icons/avatar.png" alt="" width="42" height="42">
+        <div>
+          <h1 data-assistant-name>Sana</h1>
+          <p id="header-sub">Study companion</p>
+        </div>
+      </div>
+      <span id="voice-state" class="pill" data-state="idle">Ready</span>
+      <div class="top-actions">
+        <button type="button" class="icon-btn" id="btn-new-chat" data-i18n-label="newChat" aria-label="New chat">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/></svg>
+        </button>
+        <button type="button" class="icon-btn" id="btn-menu" data-i18n-label="menu" aria-label="Menu" aria-haspopup="dialog">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 7h16v2H4V7zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="chat-screen">
+      <div id="banner" class="banner" hidden></div>
+      <div id="chat-log" role="log" aria-label="Conversation with Sana">
+        <div class="empty" id="empty-state">
+          <img src="icons/avatar.png" alt="" width="112" height="112">
+          <h2>Hi, I'm Sana</h2>
+          <p>Ask a doubt, plan a study session, or just talk.</p>
+          <div class="suggests">
+            <button type="button" data-suggest="Explain photosynthesis in simple Hindi.">Explain photosynthesis in simple Hindi</button>
+            <button type="button" data-suggest="Kal mujhe maths ka chapter padhna hai">Kal mujhe maths ka chapter padhna hai</button>
+            <button type="button" data-suggest="Write Python code for a calculator.">Write Python code for a calculator</button>
+            <button type="button" data-suggest="Sana, mujhe Python sikhna hai.">Mujhe Python sikhna hai</button>
+          </div>
+        </div>
+      </div>
+      <div id="connect-card" class="connect-card" hidden>
+        <div>
+          <strong>Connect Sana’s server</strong>
+          <p>This is the server address, not an API key. The key stays on the server.</p>
+        </div>
+        <input id="connect-url" type="url" inputmode="url" placeholder="https://your-sana-server" aria-label="Server address">
+        <button type="button" id="connect-save" class="primary">Connect</button>
+      </div>
+      <form class="composer" id="composer" autocomplete="off">
+        <div class="mode-row">
+          <button type="button" class="chip" id="chip-study" aria-pressed="false" data-i18n="study">Study</button>
+          <button type="button" class="chip" id="chip-work" aria-pressed="false" data-i18n="work">Work</button>
+          <button type="button" class="chip" id="chip-web" aria-pressed="false" data-i18n="web">Web</button>
+        </div>
+        <div id="live-bar" class="live-bar" hidden>
+          <span id="live-label">Listening</span>
+          <span>
+            <button type="button" id="btn-replay" data-i18n="replay">Replay</button>
+            <button type="button" id="btn-stop-voice" data-i18n="stop">Stop</button>
+          </span>
+        </div>
+        <div id="attachment-preview" class="attach-preview" hidden></div>
+        <div class="input-shell">
+          <button type="button" class="icon-btn" id="btn-attach" data-i18n-label="attach" aria-label="Attach image or document">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M16.5 6.5l-6.8 6.8a3 3 0 104.2 4.2l6.4-6.4 1.4 1.4-6.4 6.4a5 5 0 11-7.1-7.1l6.8-6.8a3.5 3.5 0 015 5l-6.1 6.1-1.4-1.4 6.1-6.1a1.5 1.5 0 10-2.1-2.1z"/></svg>
+          </button>
+          <label class="sr-only" for="composer-input">Message Sana</label>
+          <textarea id="composer-input" rows="1" data-i18n="placeholder" placeholder="Message Sana" enterkeyhint="send"></textarea>
+          <button type="button" class="mic-btn" id="btn-mic" data-i18n-label="mic" aria-label="Microphone">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 14a3 3 0 003-3V6a3 3 0 10-6 0v5a3 3 0 003 3zm-7-3h2a5 5 0 0010 0h2a7 7 0 01-6 6.9V21h-2v-3.1A7 7 0 015 11z"/></svg>
+          </button>
+          <button type="button" class="send-btn" id="btn-send" data-i18n-label="send" aria-label="Send">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 11l18-8-8 18-2-7-8-3z"/></svg>
+          </button>
+          <button type="button" class="send-btn" id="btn-stop" hidden data-i18n-label="stopGenerating" aria-label="Stop generating">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 7h10v10H7z"/></svg>
+          </button>
+        </div>
+        <input id="file-input" type="file" hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+      </form>
+    </main>
+
+    <section id="screen-settings" class="subscreen" hidden>
+      <header class="subhead">
+        <button type="button" class="icon-btn" data-nav="back" data-i18n-label="back" aria-label="Back">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4L14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>
+        </button>
+        <h2 data-i18n="settings">Settings</h2>
+      </header>
+      <div class="subbody">
+        <section class="group">
+          <h3>Assistant</h3>
+          <label>Sana name
+            <input id="setting-name" type="text" maxlength="24" autocomplete="off">
+          </label>
+          <label>Language
+            <select id="setting-language">
+              <option value="auto">Auto — match the user</option>
+              <option value="hi">Hindi</option>
+              <option value="hinglish">Hinglish</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+        </section>
+        <section class="group">
+          <h3>Voice</h3>
+          <label class="switch">Voice on
+            <input id="setting-voice" type="checkbox" checked>
+          </label>
+          <label>Female voice selection
+            <select id="setting-voice-name"></select>
+          </label>
+          <p id="voice-note" class="hint"></p>
+          <label>Speech speed <span id="rate-value">1.0</span>
+            <input id="setting-rate" type="range" min="0.7" max="1.4" step="0.1" value="1">
+          </label>
+          <label class="switch">Auto-read responses
+            <input id="setting-autoread" type="checkbox">
+          </label>
+        </section>
+        <section class="group">
+          <h3>Theme</h3>
+          <div class="segmented" id="setting-theme" role="radiogroup" aria-label="Theme">
+            <button type="button" role="radio" data-theme="dark" aria-checked="true">Dark mode</button>
+            <button type="button" role="radio" data-theme="light" aria-checked="false">Light mode</button>
+            <button type="button" role="radio" data-theme="system" aria-checked="false">System</button>
+          </div>
+        </section>
+        <section class="group">
+          <h3>Memory</h3>
+          <button type="button" class="text-btn" id="open-memory">View, edit, or clear memory</button>
+          <button type="button" class="text-btn" id="btn-clear-memory">Clear memory</button>
+        </section>
+        <section class="group">
+          <h3>Conversations</h3>
+          <button type="button" class="text-btn" id="btn-clear-chat">Clear this conversation</button>
+          <button type="button" class="text-btn" id="btn-clear-chats">Clear all conversations</button>
+        </section>
+        <section class="group" id="server-group" hidden>
+          <h3>Server</h3>
+          <label>Server address
+            <input id="setting-server" type="url" inputmode="url" placeholder="https://your-sana-server" autocomplete="off">
+          </label>
+          <p class="hint">This is the server address, not an API key. Never paste a secret here.</p>
+          <button type="button" class="text-btn" id="btn-save-server">Save server</button>
+        </section>
+        <section class="group">
+          <h3>API / service status</h3>
+          <div id="api-status" aria-live="polite"></div>
+          <button type="button" class="text-btn" id="btn-refresh-status">Refresh status</button>
+        </section>
+        <section class="group">
+          <button type="button" class="text-btn" id="open-about">About Sana</button>
+          <button type="button" class="text-btn" id="open-privacy">Privacy information</button>
+          <button type="button" class="text-btn" id="btn-install" hidden>Add Sana to your home screen</button>
+        </section>
+      </div>
+    </section>
+
+    <section id="screen-memory" class="subscreen" hidden>
+      <header class="subhead">
+        <button type="button" class="icon-btn" data-nav="back" aria-label="Back">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4L14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>
+        </button>
+        <h2>Memory</h2>
+      </header>
+      <div class="subbody">
+        <p class="hint">Sana remembers only what you explicitly ask her to remember, or what you add here. Passwords, API keys, and payment details are refused.</p>
+        <form id="memory-add" class="group">
+          <label>Add a memory
+            <input id="memory-input" type="text" maxlength="500" placeholder="I am in class 12">
+          </label>
+          <button type="submit" class="primary">Save</button>
+        </form>
+        <div id="memory-list"></div>
+      </div>
+    </section>
+
+    <section id="screen-about" class="subscreen about" hidden>
+      <header class="subhead">
+        <button type="button" class="icon-btn" data-nav="back" aria-label="Back">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4L14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>
+        </button>
+        <h2>About Sana</h2>
+      </header>
+      <div class="subbody">
+        <img class="avatar" src="icons/avatar.png" alt="" width="64" height="64">
+        <p>Sana is your AI assistant and study companion. She can chat in Hindi, Hinglish, and English, help you study, and help with work and coding.</p>
+        <p>Version 1.0.0</p>
+        <p>Her spoken voice is a generic female voice from your phone, when the device has one. It is not a celebrity or a specific person’s voice.</p>
+        <p>Image understanding needs a vision-capable model on the server. If the model cannot read a file, Sana says so instead of pretending.</p>
+        <p>Web answers are labeled. If search results are missing, Sana will not invent links or current facts.</p>
+      </div>
+    </section>
+
+    <section id="screen-privacy" class="subscreen privacy" hidden>
+      <header class="subhead">
+        <button type="button" class="icon-btn" data-nav="back" aria-label="Back">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M15.4 5.4L14 4l-8 8 8 8 1.4-1.4L8.8 12z"/></svg>
+        </button>
+        <h2>Privacy</h2>
+      </header>
+      <div class="subbody">
+        <p>Chats are stored on this phone so they survive a restart, and on the Sana server you connect to so the current conversation keeps its context.</p>
+        <p>A new chat gets a new conversation id. Old context is not mixed into it.</p>
+        <p>Persistent memory is saved only when you ask Sana to remember something, or add it in Memory. You can view, edit, and clear it.</p>
+        <p>Sana does not store passwords, API keys, payment details, or other secrets as memories. Do not paste secrets into chat.</p>
+        <p>The AI provider receives your message text so it can reply. The API key never leaves the server and is never shown in the app.</p>
+        <p>Microphone audio is turned into text by your device’s speech service, which may use that service’s online recognition. This app sends the text, not a saved recording, to Sana’s server.</p>
+        <p>You can clear this chat, all chats, and memory at any time in Settings.</p>
+      </div>
+    </section>
+
+    <div id="onboarding" class="onboarding">
+      <div class="onb-card">
+        <img class="onb-avatar" src="icons/avatar.png" alt="" width="84" height="84">
+        <h1>Hi, I'm Sana 👋</h1>
+        <p class="lede">Your AI assistant and study companion.</p>
+        <ul class="onb-list">
+          <li>Chat with Sana</li>
+          <li>Talk using the microphone</li>
+          <li>Ask study questions</li>
+          <li>Get help with work and coding</li>
+        </ul>
+        <button type="button" class="primary" id="btn-onboard">Continue</button>
+      </div>
+    </div>
+    <div id="mic-ask" class="mic-ask" hidden>
+      <div class="mic-card">
+        <h2>Microphone</h2>
+        <p class="lede">Sana can listen when you tap the mic, then read her reply aloud. Text chat works either way.</p>
+        <div class="stack">
+          <button type="button" class="primary" id="btn-allow-mic">Allow microphone</button>
+          <button type="button" class="ghost" id="btn-skip-mic">Not now</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="overlay" class="overlay" hidden>
+      <div id="sheet" class="sheet" role="dialog" aria-modal="true">
+        <div class="sheet-handle"></div>
+        <div id="sheet-body"></div>
+      </div>
+    </div>
+
+    <div id="dialog" class="dialog-back" hidden>
+      <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialog-title">
+        <h2 id="dialog-title">Confirm</h2>
+        <p id="dialog-body"></p>
+        <div class="dialog-actions">
+          <button type="button" id="dialog-cancel">Cancel</button>
+          <button type="button" id="dialog-ok">Confirm</button>
+        </div>
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <div id="sr-status" class="sr-only" aria-live="polite"></div>
+  </div>
+
+  <template id="tpl-menu">
+    <h2>Sana</h2>
+    <button type="button" class="task" data-go="settings"><strong>Settings</strong><small>Voice, theme, memory, service status</small></button>
+    <button type="button" class="task" data-open-sheet="history"><strong>Chats</strong><small>Open an earlier conversation</small></button>
+    <button type="button" class="task" data-go="memory"><strong>Memory</strong><small>What you asked Sana to remember</small></button>
+    <button type="button" class="task" data-go="about"><strong>About Sana</strong></button>
+    <button type="button" class="task" data-go="privacy"><strong>Privacy</strong></button>
+  </template>
+  <template id="tpl-history">
+    <h2>Chats</h2>
+    <div data-history></div>
+  </template>
+  <template id="tpl-study">
+    <h2>Study mode</h2>
+    <p class="hint">Explain, revise, quiz, or solve a photographed question. Attach a photo or PDF first if you have one.</p>
+    <div class="levels" role="group" aria-label="Explanation level">
+      <button type="button" data-level="simple" aria-pressed="false">Very simple</button>
+      <button type="button" data-level="normal" aria-pressed="true">Normal</button>
+      <button type="button" data-level="detailed" aria-pressed="false">Detailed</button>
+    </div>
+    <button type="button" class="task" data-study="explain"><strong>Explain simply</strong><small>A clear explanation of the topic</small></button>
+    <button type="button" class="task" data-study="teacher"><strong>Explain like a teacher</strong><small>A short lesson with an example</small></button>
+    <button type="button" class="task" data-study="steps"><strong>Step-by-step solution</strong><small>Reasoning and formulas shown</small></button>
+    <button type="button" class="task" data-study="summarize"><strong>Summarize notes</strong></button>
+    <button type="button" class="task" data-study="points"><strong>Important points</strong></button>
+    <button type="button" class="task" data-study="revision"><strong>Revision mode</strong><small>One question at a time</small></button>
+    <button type="button" class="task" data-study="quiz"><strong>Quiz</strong></button>
+    <button type="button" class="task" data-study="practice"><strong>Practice questions</strong></button>
+    <button type="button" class="task" data-study="flashcards"><strong>Flashcards</strong></button>
+    <button type="button" class="task" data-study="timetable"><strong>Study timetable</strong></button>
+    <button type="button" class="task" data-study="doubt"><strong>Solve a doubt</strong><small>Works with a photo of the question</small></button>
+    <button type="button" class="ghost" data-action="exit-mode">Turn study mode off</button>
+  </template>
+  <template id="tpl-work">
+    <h2>Work assistant</h2>
+    <p class="hint">Coding, writing, planning, research, and troubleshooting — one assistant, not a dashboard.</p>
+    <button type="button" class="task" data-work="code"><strong>Coding</strong></button>
+    <button type="button" class="task" data-work="debug"><strong>Debug code</strong></button>
+    <button type="button" class="task" data-work="webdev"><strong>Website development</strong></button>
+    <button type="button" class="task" data-work="appdev"><strong>App development</strong></button>
+    <button type="button" class="task" data-work="write"><strong>Writing and editing</strong></button>
+    <button type="button" class="task" data-work="plan"><strong>Planning</strong></button>
+    <button type="button" class="task" data-work="research"><strong>Research</strong><small>Uses the web when search is available</small></button>
+    <button type="button" class="task" data-work="document"><strong>Documents</strong></button>
+    <button type="button" class="task" data-work="ideas"><strong>Ideas</strong></button>
+    <button type="button" class="task" data-work="project"><strong>Project management</strong></button>
+    <button type="button" class="task" data-work="trouble"><strong>Troubleshooting</strong></button>
+    <button type="button" class="ghost" data-action="exit-mode">Turn work mode off</button>
+  </template>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/markdown.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/tts.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/app.js"></script>
+  <noscript><p>Sana needs JavaScript to chat. Text, voice, and settings all run in the app.</p></noscript>
+</body>
+</html>
