@@ -40,7 +40,9 @@ export class ToolManager {
   }
 
   /**
-   * Executes a tool with permission gating and optional user confirmation checks
+   * Executes a tool with permission gating and optional user confirmation checks.
+   * If a tool dynamically resolves its permission requirement based on params
+   * (e.g. READ action vs WRITE action), it respects tool.getPermissionLevel(params).
    */
   async execute(toolId, params = {}, context = {}) {
     const tool = this.tools.get(toolId);
@@ -48,10 +50,17 @@ export class ToolManager {
       throw new Error(`Tool not found: ${toolId}`);
     }
 
-    // Permission Verification
-    const permission = tool.permissionLevel || TOOL_PERMISSIONS.READ;
+    // Dynamic or static permission determination
+    const permission = typeof tool.getPermissionLevel === 'function'
+      ? tool.getPermissionLevel(params)
+      : (tool.permissionLevel || TOOL_PERMISSIONS.READ);
+
+    const requiresConfirmation = typeof tool.getRequiresConfirmation === 'function'
+      ? tool.getRequiresConfirmation(params)
+      : Boolean(tool.requiresConfirmation);
+
     if (permission === TOOL_PERMISSIONS.WRITE || permission === TOOL_PERMISSIONS.DESTRUCTIVE) {
-      if (tool.requiresConfirmation && !context.confirmed) {
+      if (requiresConfirmation && !context.confirmed) {
         return {
           status: 'NEEDS_CONFIRMATION',
           toolId,
