@@ -229,6 +229,14 @@ function mockComplete({ messages, images, onToken }) {
       users: users.map((item) => item.slice(0, 240)),
       images: images?.length || 0,
     })}`;
+  } else if (/who are you|tum kaun ho|sana kaun hai|tumhe kisne banaya|who created you|तुम कौन हो|तुम्हें किसने बनाया|साना कौन है/i.test(latest)) {
+    if (/[\u0900-\u097F]/.test(latest)) {
+      text = 'मैं साना (SANA) हूँ — एक पर्सनल एआई असिस्टेंट और दोस्त। मुझे राव अभिषेक राव ने बनाया है, और मैं उनकी पर्सनल असिस्टेंट और दोस्त हूँ। उनके पिता का नाम श्री दीपक कुमार है।';
+    } else if (/\b(tum|kaun|kisne|banaya)\b/i.test(latest)) {
+      text = 'Main SANA hoon — ek personal AI assistant aur friend. Mujhe Rao Abhishek Rao ne banaya hai, aur main unki personal assistant aur friend hoon. Unke pita ka naam Mr. Deepak Kumar hai.';
+    } else {
+      text = 'I am SANA — a personal AI assistant and friend. I was created by Rao Abhishek Rao, and I am his personal assistant and friend. His father\'s name is Mr. Deepak Kumar.';
+    }
   } else if (/example do|example dena|ek example/i.test(latest) && /python/i.test(previous)) {
     text = 'Bilkul. Python variable ka example:\n\n```python\nname = "Sana"\nage = 1\nprint(name, age)\n```\n\nYahan `name` aur `age` variables hain — unme value store hoti hai.';
   } else if (/variables samjhao|variable samjhao/i.test(latest) && /python/i.test(previous + latest)) {

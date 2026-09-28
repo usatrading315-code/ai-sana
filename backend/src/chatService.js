@@ -8,6 +8,7 @@ import { searchWeb } from './search.js';
 import { streamCompletion } from './providers.js';
 import { buildSystemPrompt, webBlock } from './prompts.js';
 import { defaultRouter } from './skills/index.js';
+import { resolveFastLocalResponse } from './skills/fastRouter.js';
 import {
   AppError,
   detectLanguage,
@@ -20,6 +21,7 @@ import {
 import { createRateLimiter } from './rateLimit.js';
 
 const limit = createRateLimiter({ windowMs: 60_000, max: 30 });
+const inFlightRequests = new Map();
 let conversations;
 let memories;
 let tasks;
@@ -121,6 +123,51 @@ export async function runChat(rawBody, ctx) {
     } catch {
       webStatus = 'error';
       sources = [];
+    }
+  }
+
+  // -------------------------------------------------------------
+  // Fast Local Deterministic Response Router
+  // Bypasses upstream Gemini when input is a deterministic short command
+  // (disabled during test mocks or when simulated keys are active)
+  // -------------------------------------------------------------
+  const historyBefore = convStore.modelMessages(input.conversationId, input.deviceId);
+  const allowFast =
+    process.env.AI_FAST_ROUTER !== '0' &&
+    !process.env.AI_MOCK_DEBUG &&
+    !process.env.AI_BASE_URL?.includes('127.0.0.1') &&
+    !cfg.baseUrl?.includes('127.0.0.1') &&
+    cfg.provider !== 'mock' &&
+    !cfg.apiKey?.startsWith('AIzaGEMINIKEYONLY') &&
+    !input.regenerate &&
+    !images.length &&
+    !input.attachments.length &&
+    !wantWeb &&
+    input.mode === 'chat' &&
+    historyBefore.length <= 1; // Only for fresh or single-turn prompts without context dependency
+
+  if (allowFast) {
+    const fastAnswer = resolveFastLocalResponse(input.message, {
+      language: input.language,
+      assistantName: input.assistantName || 'Sana',
+    });
+    if (fastAnswer) {
+      convStore.appendAssistant(input.conversationId, input.deviceId, fastAnswer.text, {
+        stopped: false,
+        knowledge: 'local',
+      });
+      if (ctx.onToken) ctx.onToken(fastAnswer.text);
+      return {
+        text: fastAnswer.text,
+        stopped: false,
+        sources: [],
+        webStatus: 'off',
+        knowledge: 'local',
+        detectedLanguage: detectLanguage(input.message),
+        memoryNote,
+        conversationId: input.conversationId,
+        conversation_id: input.conversationId,
+      };
     }
   }
 
