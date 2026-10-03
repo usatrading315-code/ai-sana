@@ -353,6 +353,11 @@
       openSheet('menu');
     });
     $('btn-new-chat').addEventListener('click', () => S.chat.newChat());
+    $('btn-tools-center')?.addEventListener('click', () => {
+      history.pushState({ sana: true, sheet: 'tools' }, '');
+      S.toolsCenter?.open();
+    });
+
     $('chip-study').addEventListener('click', () => {
       history.pushState({ sana: true, sheet: 'study' }, '');
       openSheet('study');

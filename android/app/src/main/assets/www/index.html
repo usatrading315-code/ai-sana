@@ -32,6 +32,9 @@
       </div>
       <span id="voice-state" class="pill" data-state="idle">Ready</span>
       <div class="top-actions">
+        <button type="button" class="icon-btn" id="btn-tools-center" title="AI Tools Center" aria-label="AI Tools Center">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 6h4v4H4V6zm6 0h10v2H10V6zm0 4h7v2h-7v-2zM4 14h4v4H4v-4zm6 0h10v2H10v-2zm0 4h7v2h-7v-2z"/></svg>
+        </button>
         <button type="button" class="icon-btn" id="btn-new-chat" data-i18n-label="newChat" aria-label="New chat">
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/></svg>
         </button>
@@ -328,6 +331,7 @@
 
   <template id="tpl-menu">
     <h2>Sana</h2>
+    <button type="button" class="task" id="menu-open-tools"><strong>⚡ AI Tools Center</strong><small>Access all 12 integrated AI tools</small></button>
     <button type="button" class="task" data-go="settings"><strong>Settings</strong><small>Voice, theme, memory, service status</small></button>
     <button type="button" class="task" data-open-sheet="history"><strong>Chats</strong><small>Open an earlier conversation</small></button>
     <button type="button" class="task" data-go="memory"><strong>Memory</strong><small>What you asked Sana to remember</small></button>
@@ -383,6 +387,8 @@
   <script src="js/voice.js"></script>
   <script src="js/tts.js"></script>
   <script src="js/avatar.js"></script>
+  <script src="js/toolsCenter.js"></script>
+  
   <script src="js/chat.js"></script>
   <script src="js/app.js"></script>
   <noscript><p>Sana needs JavaScript to chat. Text, voice, and settings all run in the app.</p></noscript>

@@ -210,6 +210,12 @@ async function streamGemini({ cfg, model, messages, images, signal, onToken, att
     if (attempt < 2 && response.status === 400 && !geminiAuthFailure(detail)) {
       return streamGemini({ cfg, model, messages, images, signal, onToken, attempt: attempt + 1 });
     }
+    // Bounded exponential backoff with jitter for transient upstream 503 / 429
+    if (attempt < 2 && (response.status === 503 || response.status === 429) && !signal?.aborted) {
+      const delayMs = Math.min(1000 * Math.pow(2, attempt) + Math.floor(Math.random() * 200), 2500);
+      await new Promise((r) => setTimeout(r, delayMs));
+      return streamGemini({ cfg, model, messages, images, signal, onToken, attempt: attempt + 1 });
+    }
     throw new AppError(codeForStatus(response.status, detail), upstreamMessage(response.status, detail), statusFor(response.status, detail));
   }
   const collected = await readGeminiBody(response, signal, onToken);

@@ -794,6 +794,16 @@
   }
 
   S.chat = {
+    sendDirect(text) {
+      if (input) input.value = text;
+      send();
+    },
+    focusInput() {
+      if (input) {
+        input.focus();
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    },
     init() {
       if (booted) return;
       booted = true;
