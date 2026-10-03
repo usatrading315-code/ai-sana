@@ -42,6 +42,22 @@
 
   function setVoiceState(next, detail) {
     voiceState = next;
+
+    // Connect with SANA Avatar Controller
+    if (S.avatar) {
+      const avatarState =
+        next === 'listening'
+          ? 'listening'
+          : next === 'processing'
+            ? 'thinking'
+            : next === 'speaking'
+              ? 'speaking'
+              : next === 'error'
+                ? 'error'
+                : 'idle';
+      S.avatar.setState(avatarState, detail);
+    }
+
     const pill = $('voice-state');
     const label =
       next === 'listening'
@@ -408,12 +424,14 @@
           },
         });
       } else if (voiceState !== 'listening') {
+        if (S.avatar) S.avatar.setState('success', 'Response completed');
         setVoiceState('idle');
       }
     } catch (error) {
       setGenerating(false);
       run = null;
       removeNode(typingId);
+      if (S.avatar) S.avatar.setState('error', error.message || 'Attention required');
       if (error.name === 'AbortError') {
         if (voiceState === 'processing') setVoiceState('idle');
         return;
@@ -655,10 +673,13 @@
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
-        send();
+        if (!generating) send();
       }
     });
-    $('btn-send').addEventListener('click', () => send());
+    $('btn-send').addEventListener('click', (event) => {
+      event.preventDefault();
+      if (!generating) send();
+    });
     $('btn-stop').addEventListener('click', stopGeneration);
     $('btn-mic').addEventListener('click', () => onMic());
     $('btn-stop-voice').addEventListener('click', () => {
@@ -776,6 +797,7 @@
     init() {
       if (booted) return;
       booted = true;
+      if (S.avatar) S.avatar.init();
       bind();
       renderAll();
       applyName();

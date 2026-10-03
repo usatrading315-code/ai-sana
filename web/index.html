@@ -44,15 +44,65 @@
     <main id="chat-screen">
       <div id="banner" class="banner" hidden></div>
       <div id="chat-log" role="log" aria-label="Conversation with Sana">
+        <!-- Main Dashboard & Realistic Full-Body SANA Avatar Stage -->
         <div class="empty" id="empty-state">
-          <img src="icons/avatar.png" alt="" width="112" height="112">
-          <h2>Hi, I'm Sana</h2>
-          <p>Ask a doubt, plan a study session, or just talk.</p>
+          <div class="avatar-stage-wrapper" id="sana-avatar-stage">
+            <div class="avatar-halo" id="avatar-halo-glow"></div>
+            <div class="avatar-figure-frame">
+              <img id="avatar-character-img" class="avatar-fullbody" src="avatar/outfits/saree_standing_opt.webp" alt="Sana AI Avatar" width="320" height="480">
+            </div>
+            <div class="avatar-status-pill">
+              <span id="avatar-status-badge" class="avatar-badge state-greeting">Namaste 🙏</span>
+              <p id="avatar-status-sub" class="avatar-sub">At your service</p>
+            </div>
+            <div class="avatar-outfit-switcher" aria-label="Choose Sana Outfit">
+              <button type="button" class="outfit-btn active" data-outfit-choice="saree" title="Silk Saree">Saree</button>
+              <button type="button" class="outfit-btn" data-outfit-choice="suit" title="Formal Suit">Suit</button>
+            </div>
+          </div>
+
+          <div class="dashboard-greeting">
+            <h2>Hi, I'm Sana 👋</h2>
+            <p>Your AI assistant, study companion & productivity partner.</p>
+          </div>
+
+          <!-- Quick Interactive Skill & Dashboard Cards -->
+          <div class="dashboard-grid">
+            <div class="dash-card" data-suggest="Explain photosynthesis simply with chemical formula.">
+              <div class="dash-card-icon">📚</div>
+              <div class="dash-card-info">
+                <strong>Study Companion</strong>
+                <span>Step-by-step topic breakdown & notes</span>
+              </div>
+            </div>
+            <div class="dash-card" data-suggest="Write a clean Python script to reverse a linked list with tests.">
+              <div class="dash-card-icon">💻</div>
+              <div class="dash-card-info">
+                <strong>Coding & Debugging</strong>
+                <span>Python, JS, Kotlin code & bug fixes</span>
+              </div>
+            </div>
+            <div class="dash-card" data-suggest="Search the web for today's top tech news and summarize key facts.">
+              <div class="dash-card-icon">🌐</div>
+              <div class="dash-card-info">
+                <strong>Live Research</strong>
+                <span>Tavily web search & verified sources</span>
+              </div>
+            </div>
+            <div class="dash-card" data-suggest="Add task: Complete math homework chapter 5">
+              <div class="dash-card-icon">📋</div>
+              <div class="dash-card-info">
+                <strong>Tasks & Reminders</strong>
+                <span>Organize to-dos & study schedules</span>
+              </div>
+            </div>
+          </div>
+
           <div class="suggests">
             <button type="button" data-suggest="Explain photosynthesis in simple Hindi.">Explain photosynthesis in simple Hindi</button>
-            <button type="button" data-suggest="Kal mujhe maths ka chapter padhna hai">Kal mujhe maths ka chapter padhna hai</button>
-            <button type="button" data-suggest="Write Python code for a calculator.">Write Python code for a calculator</button>
-            <button type="button" data-suggest="Sana, mujhe Python sikhna hai.">Mujhe Python sikhna hai</button>
+            <button type="button" data-suggest="Kal mujhe maths ka chapter padhna hai, plan banao">Kal padhai ka plan banao</button>
+            <button type="button" data-suggest="Write Python code for a calculator.">Python calculator code</button>
+            <button type="button" data-suggest="Sana, mujhe variables aur functions samjhao.">Variables samjhao</button>
           </div>
         </div>
       </div>
@@ -204,6 +254,7 @@
       <div class="subbody">
         <img class="avatar" src="icons/avatar.png" alt="" width="64" height="64">
         <p>Sana is your AI assistant and study companion. She can chat in Hindi, Hinglish, and English, help you study, and help with work and coding.</p>
+        <p><strong>Creator:</strong> SANA AI was created and developed by Rao Abhishek Rao, a 19-year-old graduation student. His father is Mr. Deepak Kumar.</p>
         <p>Version 1.0.0</p>
         <p>Her spoken voice is a generic female voice from your phone, when the device has one. It is not a celebrity or a specific person’s voice.</p>
         <p>Image understanding needs a vision-capable model on the server. If the model cannot read a file, Sana says so instead of pretending.</p>
@@ -331,6 +382,7 @@
   <script src="js/markdown.js"></script>
   <script src="js/voice.js"></script>
   <script src="js/tts.js"></script>
+  <script src="js/avatar.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/app.js"></script>
   <noscript><p>Sana needs JavaScript to chat. Text, voice, and settings all run in the app.</p></noscript>

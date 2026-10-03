@@ -536,6 +536,308 @@ html:not(.onboarded) #chat-screen { display: none; }
   text-align: center;
 }
 
+/* ==========================================================================
+   Realistic SANA Avatar Stage & Dashboard Presentation
+   ========================================================================== */
+.avatar-stage-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 380px;
+  margin: 12px auto 16px;
+  padding: 10px 10px 16px;
+}
+
+.avatar-halo {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(62, 224, 194, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: blur(14px);
+}
+
+.avatar-figure-frame {
+  position: relative;
+  z-index: 2;
+  width: 220px;
+  height: 330px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 28px;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--line);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 0, 0, 0.22) 100%);
+}
+
+.avatar-fullbody {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: opacity 0.35s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
+  transform-origin: center bottom;
+  animation: avatarBreathe 4.8s ease-in-out infinite;
+}
+
+.avatar-fullbody.fading {
+  opacity: 0;
+  transform: scale(0.97);
+}
+
+/* Dynamic State Animations & Gestures */
+@keyframes avatarBreathe {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.008);
+  }
+}
+
+@keyframes avatarListeningPulse {
+  0%, 100% {
+    transform: scale(1.02) translateY(-2px);
+    filter: drop-shadow(0 0 12px rgba(62, 224, 194, 0.5));
+  }
+  50% {
+    transform: scale(1.04) translateY(-4px);
+    filter: drop-shadow(0 0 18px rgba(62, 224, 194, 0.8));
+  }
+}
+
+@keyframes avatarThinkingSway {
+  0%, 100% {
+    transform: translateY(-2px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1.2deg);
+  }
+}
+
+@keyframes avatarSpeakingGesture {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 10px rgba(129, 199, 132, 0.45));
+  }
+  25% {
+    transform: translateY(-3px) scale(1.015);
+  }
+  75% {
+    transform: translateY(-1px) scale(1.005);
+  }
+}
+
+@keyframes avatarSuccessPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.035) translateY(-5px); }
+  100% { transform: scale(1); }
+}
+
+/* State Classes Attached by Avatar Controller */
+.avatar-stage-wrapper.avatar-listening .avatar-fullbody {
+  animation: avatarListeningPulse 2s ease-in-out infinite;
+}
+
+.avatar-stage-wrapper.avatar-thinking .avatar-fullbody {
+  animation: avatarThinkingSway 2.8s ease-in-out infinite;
+}
+
+.avatar-stage-wrapper.avatar-speaking .avatar-fullbody {
+  animation: avatarSpeakingGesture 1.6s ease-in-out infinite;
+}
+
+.avatar-stage-wrapper.avatar-success .avatar-fullbody {
+  animation: avatarSuccessPop 1.2s ease-out 1;
+}
+
+.avatar-stage-wrapper.avatar-error .avatar-fullbody {
+  filter: grayscale(18%) contrast(96%);
+}
+
+.avatar-stage-wrapper.avatar-greeting .avatar-fullbody {
+  animation: avatarBreathe 3.6s ease-in-out infinite;
+}
+
+.avatar-stage-wrapper.paused-animations .avatar-fullbody,
+.avatar-stage-wrapper.paused-animations .avatar-halo {
+  animation: none !important;
+}
+
+/* Status Pill & Outfits */
+.avatar-status-pill {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 2;
+}
+
+.avatar-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  transition: all 0.3s ease;
+}
+
+.avatar-badge.state-idle {
+  color: var(--accent);
+  border-color: rgba(62, 224, 194, 0.3);
+}
+
+.avatar-badge.state-listening {
+  color: #071018;
+  background: #3ee0c2;
+  border-color: #3ee0c2;
+  box-shadow: 0 0 14px rgba(62, 224, 194, 0.6);
+}
+
+.avatar-badge.state-thinking {
+  color: #2e1600;
+  background: #ffb74d;
+  border-color: #ffb74d;
+  box-shadow: 0 0 14px rgba(255, 183, 77, 0.5);
+}
+
+.avatar-badge.state-speaking {
+  color: #0d2810;
+  background: #81c784;
+  border-color: #81c784;
+  box-shadow: 0 0 14px rgba(129, 199, 132, 0.6);
+}
+
+.avatar-badge.state-success {
+  color: #fff;
+  background: #2e7d32;
+  border-color: #2e7d32;
+}
+
+.avatar-badge.state-error {
+  color: #fff;
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.avatar-badge.state-greeting {
+  color: #2e1600;
+  background: #ffa726;
+  border-color: #ffa726;
+}
+
+.avatar-sub {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.avatar-outfit-switcher {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  z-index: 2;
+}
+
+.outfit-btn {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.outfit-btn.active {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Dashboard Interactive Cards */
+.dashboard-greeting {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.dashboard-greeting h2 {
+  font-size: 1.4rem;
+  margin: 0 0 4px;
+}
+
+.dashboard-greeting p {
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: 480px;
+  margin: 8px auto 16px;
+}
+
+.dash-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  text-align: left;
+}
+
+.dash-card:hover, .dash-card:active {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.dash-card-icon {
+  font-size: 1.35rem;
+}
+
+.dash-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-card-info strong {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.dash-card-info span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation: none !important;
@@ -543,3 +845,4 @@ html:not(.onboarded) #chat-screen { display: none; }
     scroll-behavior: auto !important;
   }
 }
+
